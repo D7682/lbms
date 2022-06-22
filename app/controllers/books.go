@@ -3,6 +3,7 @@ package controllers
 import (
 	"lbms/app/models"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -33,8 +34,15 @@ func (b BookHandler) NewBook(c *gin.Context) {
 	c.JSON(http.StatusOK, book)
 }
 
-func (b BookHandler) GetAll(c *gin.Context) {
-	books, err := b.bookRepo.GetAll()
+func (b BookHandler) Get(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.Status(http.StatusBadRequest)
+		return
+	}
+
+	books, err := b.bookRepo.Get(int64(id))
 	if err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
 		return

@@ -21,22 +21,25 @@ func NewBookRepo(db *mongo.Collection) *BookRepo {
 func (b BookRepo) Save(book models.Book) error {
 	// https://stackoverflow.com/questions/61078884/mongodb-auto-increment-id-with-golang-mongo-driver
 	ctx := context.Background()
-	_, err := b.db.InsertOne(ctx, book)
+	count, err := b.db.CountDocuments(ctx, bson.M{})
+	if err != nil {
+		return err
+	}
+
+	book.ID = count + 1
+
+	_, err = b.db.InsertOne(ctx, book)
 	return err
 }
 
-func (b BookRepo) GetAll() ([]models.Book, error) {
+func (b BookRepo) Get(id int64) (models.Book, error) {
 	ctx := context.Background()
-	result, err := b.db.Find(ctx, bson.M{})
+
+	var book models.Book
+	err := b.db.FindOne(ctx, bson.D{{"_id", id}}).Decode(&book)
 	if err != nil {
-		return nil, err
+		return models.Book{}, err
 	}
 
-	var books []models.Book
-	err = result.All(ctx, &books)
-	if err != nil {
-		return nil, err
-	}
-
-	return books, nil
+	return book, nil
 }

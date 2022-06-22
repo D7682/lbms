@@ -52,7 +52,7 @@ func (a *App) Run() error {
 	bookHandler := controllers.NewBookHandler(bookRepo)
 
 	r.POST("/books", bookHandler.NewBook)
-	r.GET("/books", bookHandler.GetAll)
+	r.GET("/books/:id", bookHandler.Get)
 
 	if err := r.Run(":" + c.Port); err != nil {
 		return err
