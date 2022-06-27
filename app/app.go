@@ -51,8 +51,11 @@ func (a *App) Run() error {
 	bookRepo := repositories.NewBookRepo(bookCollection)
 	bookHandler := controllers.NewBookHandler(bookRepo)
 
-	r.POST("/books", bookHandler.NewBook)
-	r.GET("/books/:id", bookHandler.Get)
+	{
+		r.POST("/books", bookHandler.NewBook)
+		r.GET("/books/:id", bookHandler.Get)
+		r.GET("/books", bookHandler.All)
+	}
 
 	if err := r.Run(":" + c.Port); err != nil {
 		return err

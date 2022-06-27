@@ -1,5 +1,7 @@
 package models
 
+import "context"
+
 // Book ..
 type Book struct {
 	ID     int64  `json:"id" bson:"_id"`
@@ -9,6 +11,7 @@ type Book struct {
 
 // BookRepository ..
 type BookRepository interface {
-	Save(book Book) error
-	Get(id int64) (Book, error)
+	Save(context.Context, Book) error
+	Get(context.Context, int64) (Book, error)
+	All(context.Context) ([]Book, error)
 }
